@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+##data
+data/
+
+##faiss_index
+faiss_index/
+
 # C extensions
 *.so
 
