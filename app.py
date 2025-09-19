@@ -111,6 +111,20 @@ def process_uploaded_files():
     """
     uploaded = st.session_state.get("uploaded_files")
     if not uploaded:
+        # Delete everything in data/
+        for old_file in os.listdir("data"):
+            path = os.path.join("data", old_file)
+            if os.path.isfile(path):
+                os.remove(path)
+
+        # Delete FAISS index folder if exists
+        if os.path.exists("faiss_index"):
+            import shutil
+            shutil.rmtree("faiss_index")
+
+        st.session_state["processed"] = False
+        st.session_state["uploaded_filenames"] = []
+        st.success("All files deleted. Vector store cleared.")
         return
 
     # normalize to list
