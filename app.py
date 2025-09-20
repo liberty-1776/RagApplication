@@ -50,10 +50,6 @@ def get_openai_gpt5nano_llm(openai_api_key):
     ##returning the OPENAI GPT-5 nano Model
     return ChatOpenAI(model="gpt-5-nano-2025-08-07",api_key=openai_api_key)
 
-def get_ollama_gemma3_llm():
-    ##returning the Ollama Gemma3 Model
-    return ChatOllama(model="gemma3:27b")
-
 def get_groq_llama3_llm(groq_api_key):
     ##returning the Groq Llama 3 70b Model
     return ChatGroq(model_name="llama-3.3-70b-versatile",streaming=True,api_key=groq_api_key)
@@ -222,8 +218,7 @@ def main():
             "Groq - GPT OSS 120b",
             "Groq - Llama3",
             "OpenAI - GPT 5",
-            "OpenAI - GPT 5-nano",
-            "Ollama - Gemma3"],
+            "OpenAI - GPT 5-nano"],
             key="model_choice"
         )
 
@@ -293,8 +288,7 @@ def main():
                     llm = get_openai_gpt5_llm(OPENAI_API_KEY)
                 elif model_choice=="OpenAI - GPT 5-nano":
                     llm = get_openai_gpt5nano_llm(OPENAI_API_KEY)
-                else:
-                    llm = get_ollama_gemma3_llm()
+
 
                 st.session_state.qa_chain = get_conversational_chain(llm, faiss_index)
 
