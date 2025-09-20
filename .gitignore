@@ -5,6 +5,14 @@ __pycache__/
 
 ##data
 data/
+faiss_index/
+
+.env
+
+bedrock.py
+claude.py
+testing.ipynb
+titan_image.py
 
 ##faiss_index
 faiss_index/
