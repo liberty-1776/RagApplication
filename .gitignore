@@ -7,3 +7,6 @@ claude.py
 testing.ipynb
 titan_image.py
 llama3.py
+__pycache__/
+data/
+faiss_index/
