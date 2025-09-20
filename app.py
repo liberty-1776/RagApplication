@@ -2,10 +2,11 @@ import os
 import boto3
 import streamlit as st
 from langchain_ollama import ChatOllama
-
+import shutil
 ## We will be suing Titan Embeddings Model To generate Embeddings
 from langchain_aws import BedrockEmbeddings
 from langchain_aws import ChatBedrock
+from custom_models import DeepSeekChatModel,ChatGptModel
 
 ## Data Ingestion and Transformatioin
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -19,9 +20,58 @@ from langchain_community.vectorstores import FAISS
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA,ConversationalRetrievalChain
 
+
+
 ## Bedrock Clients
-bedrock=boto3.client(service_name="bedrock-runtime")
+bedrock=boto3.client(service_name="bedrock-runtime",region_name='ap-south-1')
 bedrock_embeddings=BedrockEmbeddings(model_id="amazon.titan-embed-text-v2:0",client=bedrock)
+
+
+def get_gpt_oss_llm():
+    return ChatBedrock(
+    client=bedrock,
+    model_id="openai.gpt-oss-120b-1:0", 
+    model_kwargs={"max_completion_tokens": 512})
+
+def get_bedrock_nova_pro_llm():
+    return ChatBedrock(client=bedrock,model_id="apac.amazon.nova-pro-v1:0",model_kwargs={"maxTokens": 512,'model_provider':"amazon"})
+
+
+def get_bedrock_mistral_llm():
+    return ChatBedrock(model_id="mistral.mistral-7b-instruct-v0:2",client=bedrock,max_tokens=512)
+
+def get_bedrock_deepseek_llm():
+    return DeepSeekChatModel(model_id="deepseek.v3-v1:0", max_tokens=512)
+
+def get_bedrock_claude_llm():
+    ##create the Anthropic Model
+    return ChatBedrock(model="anthropic.claude-3-sonnet-20240229-v1:0",client=bedrock,
+                model_kwargs={'max_tokens':512})
+
+
+def get_bedrock_llama3_llm():
+    ##create the Anthropic Model
+    return ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0",client=bedrock,
+                model_kwargs={'max_gen_len':512})
+    
+
+prompt_template = """
+Human: Use the following pieces of context to provide a 
+concise answer to the question at the end but atleast summarize with 
+250 words with detailed explaantions.
+If the provided context is not enough, just say you dont know, dont try to cook answer up
+
+<context>
+{context}
+</context
+
+Question: {question}
+
+Assistant:"""
+
+PROMPT = PromptTemplate(
+    template=prompt_template, input_variables=["context", "question"]
+)
 
 
 def data_ingestion(file_paths):
@@ -44,39 +94,6 @@ def get_vector_store(docs):
         bedrock_embeddings
     )
     vectorstore_faiss.save_local("faiss_index")
-
-def get_claude_llm():
-    ##create the Anthropic Model
-    llm=llm=ChatOllama(model="gemma2:2b")
-    
-    return llm
-
-def get_llama2_llm():
-    ##create the Anthropic Model
-    llm=ChatBedrock(model_id="meta.llama3-70b-instruct-v1:0",client=bedrock,
-                model_kwargs={'max_gen_len':512})
-    
-    return llm
-
-prompt_template = """
-
-Human: Use the following pieces of context to provide a 
-concise answer to the question at the end but atleast summarize with 
-250 words with detailed explaantions.
-If the provided context is not enough, use your own knowledge to answer the question to 
-the best of you ability.
-
-<context>
-{context}
-</context
-
-Question: {question}
-
-Assistant:"""
-
-PROMPT = PromptTemplate(
-    template=prompt_template, input_variables=["context", "question"]
-)
 
 
 def get_conversational_chain(llm, vectorstore_faiss):
@@ -103,6 +120,8 @@ def get_response_llm(llm,vectorstore_faiss,query):
     )
     answer=qa({"query":query})
     return answer['result']
+
+
 
 def process_uploaded_files():
     """
@@ -160,16 +179,35 @@ def process_uploaded_files():
 def main():
     st.set_page_config(page_title="Chat PDF", page_icon="📄", layout="wide")
 
-    model_choice = st.selectbox(
-        "Model",
-        ["Claude 3 Sonnet", "Llama3-70B Instruct"],
-        key="model_choice"
-    )
+
+    with st.sidebar:
+        st.subheader("⚙️ Model Selection")
+        model_choice = st.selectbox(
+            "Choose Model",
+            ["Bedrock - Claude 3 Sonnet", 
+            "Bedrock - Llama3-70B",
+            "Bedrock - DeepSeek-V3",
+            "Bedrock - Nova Pro",
+            "Bedrock - GPT OSS 120b",
+            "Groq - GPT OSS 20b",
+            "Groq - "
+            "OpenAI - gpt-5o"],
+            key="model_choice"
+        )
+    # API key fields (only show if needed)
+    openai_api_key = None
+    groq_api_key = None
+
+    if "OpenAI" in model_choice:
+        openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
+
+    elif "Groq" in model_choice:
+        groq_api_key = st.text_input("Enter Groq API Key", type="password")
 
     st.header("Chat with PDF using AWS Bedrock")
 
     with st.sidebar:
-        st.title("Upload your PDF files here")
+        st.title("Upload PDF Files")
 
         if "chat_history" not in st.session_state:
             st.session_state.chat_history = []
@@ -190,6 +228,8 @@ def main():
             st.markdown("**Processed files:**")
             for name in st.session_state["uploaded_filenames"]:
                 st.write("- " + name)
+        else:
+            st.info("No files uploaded yet.")
 
     # ✅ Show chat history using st.chat_message
     for q, a in st.session_state.chat_history:
@@ -201,34 +241,40 @@ def main():
     # ✅ Input bar stays at the bottom
     user_question = st.chat_input("Ask a question from the PDFs...")
     if user_question:
-        with st.chat_message("user"):
-            st.markdown(user_question)
+        if not st.session_state.get("uploaded_filenames"):  # no files uploaded
+            with st.chat_message("assistant"):
+                st.warning("⚠️ Please upload at least one PDF before asking questions.")
+        else:
+            with st.chat_message("user"):
+                st.markdown(user_question)
 
-        with st.spinner(f"Processing your question with {model_choice}..."):
-            faiss_index = FAISS.load_local(
-                "faiss_index",
-                bedrock_embeddings,
-                allow_dangerous_deserialization=True
-            )
-            if model_choice == "Claude 3 Sonnet":
-                llm = get_claude_llm()
-            else:
-                llm = get_llama2_llm()
+            with st.spinner(f"Processing your question with {model_choice}..."):
+                faiss_index = FAISS.load_local(
+                    "faiss_index",
+                    bedrock_embeddings,
+                    allow_dangerous_deserialization=True
+                )
+                if model_choice == "Bedrock - Claude 3 Sonnet":
+                    llm = get_bedrock_claude_llm()
+                elif model_choice=="Bedrock - Llama3-70B":
+                    llm = get_bedrock_llama3_llm()
+                else:
+                    llm = get_bedrock_deepseek_llm()
 
-            st.session_state.qa_chain = get_conversational_chain(llm, faiss_index)
+                st.session_state.qa_chain = get_conversational_chain(llm, faiss_index)
 
-            result = st.session_state.qa_chain({
-                "question": user_question,
-                "chat_history": st.session_state.chat_history
-            })
+                result = st.session_state.qa_chain({
+                    "question": user_question,
+                    "chat_history": st.session_state.chat_history
+                })
 
-            answer = result["answer"]
+                answer = result["answer"]
 
-        with st.chat_message("assistant"):
-            st.markdown(answer)
+            with st.chat_message("assistant"):
+                st.markdown(answer)
 
-        # Save into chat history
-        st.session_state.chat_history.append((user_question, answer)) 
+            # Save into chat history
+            st.session_state.chat_history.append((user_question, answer)) 
 
 if __name__ == "__main__":
     main()

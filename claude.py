@@ -8,7 +8,7 @@ bedrock=boto3.client(service_name="bedrock-runtime")
 
 
 body = {
-    "anthropic_version": "bedrock-2023-05-31",  # ✅ required
+    "anthropic_version": "bedrock-2023-05-31",
     "messages": [
         {"role": "user", "content": "Act as Shakespeare and write a poem on Generative AI"}
     ],
