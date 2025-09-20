@@ -1,0 +1,18 @@
+ENV Variable
+
+AWS_REGION = ap-south-1
+OPENAI_API_KEY = sk-xxxx
+GROQ_API_KEY   = gsk-xxxx
+
+To termante
+eb terminate rag-env
+
+To create
+eb create rag-env --single
+
+
+Save cofig
+eb config save --cfg my-config
+
+Create with same config
+eb create rag-env --cfg my-config --single
