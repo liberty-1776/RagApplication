@@ -1,2 +1,15 @@
 boto3
 awscli
+langchain_core
+streamlit
+langchain_ollama
+python-dotenv
+langchain_aws
+langchain_groq
+langchain_openai
+langchain_ollama
+langchain
+langchain_community
+langchain_community
+pypdf
+faiss-cpu

@@ -1,7 +1,6 @@
 import os
 import boto3
 import streamlit as st
-from langchain_ollama import ChatOllama
 import shutil
 from dotenv import load_dotenv
 load_dotenv()
@@ -53,7 +52,7 @@ def get_openai_gpt5nano_llm(openai_api_key):
 
 def get_ollama_gemma3_llm():
     ##returning the Ollama Gemma3 Model
-    return ChatOllama(model="gemma2:2b")
+    return ChatOllama(model="gemma3:27b")
 
 def get_groq_llama3_llm(groq_api_key):
     ##returning the Groq Llama 3 70b Model
@@ -266,7 +265,7 @@ def main():
     user_question = st.chat_input("Ask a question from the PDFs...")
     if user_question:
         if not st.session_state.get("uploaded_filenames"):  # no files uploaded
-            with st.chat_message("assistant"):
+            with st.sidebar:
                 st.warning("⚠️ Please upload at least one PDF before asking questions.")
         else:
             with st.chat_message("user"):
