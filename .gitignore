@@ -10,3 +10,7 @@ llama3.py
 __pycache__/
 data/
 faiss_index/
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
