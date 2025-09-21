@@ -54,7 +54,7 @@ AWS_REGION=ap-south-1
 streamlit run app.py
 ```
 
-The app will be available at [http://localhost:8501](http://localhost:8501).
+The app will be available at <a href="http://localhost:8501" target="_blank">http://localhost:8501</a>.
 
 
 ### 5. Deploy on AWS Elastic Beanstalk
