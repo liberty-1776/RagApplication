@@ -5,20 +5,20 @@ It integrates multiple LLM providers (AWS Bedrock, OpenAI, Groq) and FAISS vecto
 
 ---
 
-## 🚀 Features
-- 📂 Upload one or multiple PDF documents  
-- 🧩 Document chunking & vectorization with **Amazon Titan Embeddings (Bedrock)**  
-- 🔍 Fast retrieval with **FAISS** vector store  
-- 💬 Conversational interface powered by:  
+## Features
+- Upload one or multiple PDF documents  
+- Document chunking & vectorization with **Amazon Titan Embeddings (Bedrock)**  
+- Fast retrieval with **FAISS** vector store  
+- Conversational interface powered by:  
   - **AWS Bedrock** (Claude 3 Sonnet, Llama 3, Nova Pro, DeepSeek V3)  
   - **OpenAI** (GPT-5, GPT-5 nano)  
   - **Groq** (Llama 3, GPT-OSS 120B)  
-- 🖥️ Deployed on **AWS Elastic Beanstalk** with Docker  
-- 🔐 Secure configuration with environment variables  
+- Deployed on **AWS Elastic Beanstalk** with Docker  
+- Secure configuration with environment variables  
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 - **Frontend**: Streamlit
 - **Backend**: Python, LangChain  
 - **Vector Store**: FAISS  
@@ -27,7 +27,7 @@ It integrates multiple LLM providers (AWS Bedrock, OpenAI, Groq) and FAISS vecto
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1. Clone the repository
 ```bash
