@@ -33,18 +33,52 @@ It integrates multiple LLM providers (AWS Bedrock, OpenAI, Groq) and FAISS vecto
 ```bash
 git clone https://github.com/liberty-1776/RagApplication.git
 cd RagApplication
+```
 
 ### 2. Install dependencies
 ```bash
 pip install -r requirements.txt
+```
 
 ### 3. Add environment variables
+Create a `.env` file in the root directory with the following keys:
+
+```env
 OPENAI_API_KEY=your_openai_api_key
 GROQ_API_KEY=your_groq_api_key
 AWS_REGION=ap-south-1
-
+```
 
 ### 4. Run locally
 ```bash
 streamlit run app.py
-The app will be available at
+```
+
+The app will be available at [http://localhost:8501](http://localhost:8501).
+
+
+### 5. Deploy on AWS Elastic Beanstalk
+
+1. Initialize Elastic Beanstalk (only once):
+   ```bash
+   eb init
+   ```
+   - Select your region (e.g., `us-east-1`)  
+   - Choose platform: **Docker running on 64bit Amazon Linux 2023**
+
+2. Create an environment:
+   ```bash
+   eb create rag-env --single
+   ```
+
+3. Add environment variables:
+   ```bash
+   eb setenv OPENAI_API_KEY=sk-xxxx GROQ_API_KEY=gsk-xxxx AWS_REGION=ap-south-1
+   ```
+
+4. Deploy updates:
+   ```bash
+   eb deploy
+   ```
+
+Your app will be live at the Elastic Beanstalk URL shown after deployment.
