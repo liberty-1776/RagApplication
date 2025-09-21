@@ -16,3 +16,10 @@ eb config save --cfg my-config
 
 Create with same config
 eb create rag-env --cfg my-config --single
+
+
+website link : http://rag-env.eba-npyxbfbd.us-east-1.elasticbeanstalk.com/
+
+https://bit.ly/hritik1710
+
+
