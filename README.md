@@ -19,7 +19,7 @@ It integrates multiple LLM providers (AWS Bedrock, OpenAI, Groq) and FAISS vecto
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend**: [Streamlit](https://streamlit.io/)  
+- **Frontend**: Streamlit
 - **Backend**: Python, LangChain  
 - **Vector Store**: FAISS  
 - **LLMs**: AWS Bedrock, OpenAI, Groq  
