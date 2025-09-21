@@ -81,4 +81,4 @@ The app will be available at <a href="http://localhost:8501" target="_blank">htt
    eb deploy
    ```
 
-Your app will be live at the Elastic Beanstalk URL shown after deployment.
+Your app will be live at the Elastic Beanstalk URL
