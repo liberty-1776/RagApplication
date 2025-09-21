@@ -133,21 +133,6 @@ def get_conversational_chain(llm, vectorstore_faiss):
     )
     return qa_chain
 
-def get_response_llm(llm,vectorstore_faiss,query):
-    qa = RetrievalQA.from_chain_type(
-    llm=llm,
-    chain_type="stuff",
-    retriever=vectorstore_faiss.as_retriever(
-        search_type="similarity", search_kwargs={"k": 3}
-    ),
-    return_source_documents=True,
-    chain_type_kwargs={"prompt": PROMPT}
-    )
-    answer=qa({"query":query})
-    return answer['result']
-
-
-
 def process_uploaded_files():
     """
     Callback invoked when the file_uploader value changes.
