@@ -4,7 +4,7 @@ AWS_REGION = ap-south-1
 OPENAI_API_KEY = sk-xxxx
 GROQ_API_KEY   = gsk-xxxx
 
-To termante
+To terminate
 eb terminate rag-env
 
 To create
